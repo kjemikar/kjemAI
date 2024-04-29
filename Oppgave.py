@@ -1,17 +1,12 @@
-import dataclasses
+import pydantic
+from typing import Dict
 
-@dataclasses.dataclass
-class OppgaveKjemiOL:
-    def __init__(self, aar:int, runde:str,nummer:int, fasit:str):
-        self.aar = aar
-        self.runde = runde
-        self.nummer = nummer
-        self.fasit = fasit
-        self.testresultat = dict()
-    
-    def __str__(self):
-        return f"Oppgave: {self.aar} {self.runde} {self.fasit} {self.testresultat}"
-    
+class OppgaveKjemiOL(pydantic.BaseModel):
+    aar: int
+    runde: str
+    nummer: int
+    fasit: str
+    testresultat: Dict[str, str] = dict()
 
     def leggTilTestresultat(self, modell:str, resultat:str):
         self.testresultat[modell] = resultat
@@ -33,7 +28,7 @@ class OppgaveKjemiOL:
         
         nummer = int(filename[-6:-4])
         fasit = fasit
-        return cls(aar, runde, nummer, fasit)
+        return cls(aar=aar, runde=runde, nummer=nummer, fasit=fasit)
     
     def getFilename(self):
         if self.nummer < 10:
@@ -46,7 +41,6 @@ if __name__ == "__main__":
     print(oppgave)
     print(oppgave.getFilename())
 
-@dataclasses.dataclass
 class OppgaveEksamen:
     def __init__(self, aar:int, eksamenskode:str, nummer:int, fasit:str):
         self.aar = aar

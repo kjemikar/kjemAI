@@ -6,15 +6,11 @@ from os import listdir
 import time
 import tomli
 
-# Load the API key from the config file
-with open("config.toml") as f:
-    config = tomli.load(f)
-    api_key = config["api_key"]
-# OpenAI API Key
+
 
 
 def rett_alternativ(image_path):
-    with open("config.toml") as f:
+    with open(r"C:\Users\78weikri\OneDrive - Akademiet Norge AS\Programmering\kjemAI\crap.toml", "rb") as f:
         config = tomli.load(f)
         api_key = config["api_key"]
 # OpenAI API Key
@@ -60,16 +56,17 @@ def rett_alternativ(image_path):
     print(image_path[-15:], response.json()["choices"][0]["message"]["content"])
     return response.json()["choices"][0]["message"]["content"]
 
-mappe = r"C:\Users\78weikri\OneDrive - Akademiet Norge AS\KjemiOL\Fleirvalsoppgåver\2024\Runde 1\\"
+if __name__ == "__main__":
+    mappe = r"C:\Users\78weikri\OneDrive - Akademiet Norge AS\KjemiOL\Fleirvalsoppgåver\2024\Runde 1\\"
 
-filliste = listdir(mappe)
-filliste.sort()
+    filliste = listdir(mappe)
+    filliste.sort()
 
-resultat = []
-telling = 0
-for filnamn in filliste:
-    if telling%4 == 0:
-        time.sleep(61)
-    image_path = mappe+filnamn
-    resultat.append([filnamn, rett_alternativ(image_path)])
-    telling += 1
+    resultat = []
+    telling = 0
+    for filnamn in filliste:
+        if telling%4 == 0:
+            time.sleep(61)
+        image_path = mappe+filnamn
+        resultat.append([filnamn, rett_alternativ(image_path)])
+        telling += 1
