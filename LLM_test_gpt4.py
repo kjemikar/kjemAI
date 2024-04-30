@@ -38,7 +38,7 @@ def rett_alternativ(image_path):
         "content": [
             {
             "type": "text",
-            "text": "Hva er det riktige svaret på flervalgsoppgaven? Gi svaret som bokstaven som er rett uten forklaring og uten parentes. Altså er maks lengde på svaret 1 bokstav."
+            "text": "Hva er det riktige svaret på flervalgsoppgaven? Gi svaret som bokstaven som er rett uten forklaring og uten parentes. Altså er maksimal lengde på svaret 1 bokstav og svaret er blant bokstavene A, B, C og D."
             },
             {
             "type": "image_url",
@@ -54,7 +54,13 @@ def rett_alternativ(image_path):
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
     print(image_path[-15:], response.json()["choices"][0]["message"]["content"])
-    return response.json()["choices"][0]["message"]["content"]
+    text = response.json()["choices"][0]["message"]["content"]
+    if text in ["A", "B", "C", "D"]:
+        return text
+    elif text.strip().capitalize() in ["A", "B", "C", "D"]:
+        return text.strip().capitalize()
+    else:
+        raise ValueError("Could not find a valid answer, provided answer was: "+text+" for image: "+image_path[-15:])
 
 if __name__ == "__main__":
     mappe = r"C:\Users\78weikri\OneDrive - Akademiet Norge AS\KjemiOL\Fleirvalsoppgåver\2024\Runde 1\\"

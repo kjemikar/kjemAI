@@ -4,9 +4,11 @@ from typing import Dict
 from Oppgave import OppgaveKjemiOL, OppgaveEksamen
 import os
 import time
-from LLM_test_gpt4 import rett_alternativ
+from LLM_test_gpt4 import rett_alternativ as rett_alternativ_gpt4
+from LLM_test_gemini10 import rett_alternativ as rett_alternativ_gemini10
+from LLM_test_gemini15 import rett_alternativ as rett_alternativ_gemini15
 
-MODEL_NAMES = ["gpt-4-turbo"]
+MODEL_NAMES = ["gpt-4-turbo", "gemini-1.0-pro-vision-001", "gemini-1.5-pro-preview-0409"]
 
 class ResultatKjemiOL(pydantic.BaseModel):
     folder: str
@@ -67,26 +69,20 @@ class ResultatKjemiOL(pydantic.BaseModel):
         return len(self.oppgaver)
         
 
-    # #export to json
-    # def export_to_json(self):
-    #     if len(self.oppgaver) != 0:
-    #         with open(f"{self.folder}json.json", "w") as f:
-    #             json.dump(self.oppgaver, f, indent=4)
-    #     else:
-    #         print("No data to export")
-
-        
-
-    # @classmethod
-    # def from_json(cls, folder,filename:str):
-    #     result = cls(folder)
-    #     with open(filename, "r") as f:
-    #         result.oppgaver = json.load(f)
-    #     return result
-        
-    
-    def test_gpt4_turbo(self):
+    def test_gpt4_turbo(self, strengkrav:str=""):
         modell = "gpt-4-turbo"
+        val = 0
+        for oppgave in self.oppgaver.values():
+            if modell not in oppgave.testresultat and strengkrav in oppgave.getFilename():
+                image_path = self.folder+oppgave.getFilename()
+                oppgave.leggTilTestresultat(modell, rett_alternativ_gpt4(image_path))
+                val += 1
+                if val %4 == 0: #Avoiding rate limiting
+                    time.sleep(60)
+        return 0
+
+    def test_gemini10(self):
+        modell = "gemini-1.0-pro-vision-001"
         val = 0
         for oppgave in self.oppgaver.values():
             val += 1
@@ -94,7 +90,19 @@ class ResultatKjemiOL(pydantic.BaseModel):
                 time.sleep(60)
             if modell not in oppgave.testresultat:
                 image_path = self.folder+oppgave.getFilename()
-                oppgave.leggTilTestresultat(modell, rett_alternativ(image_path))
+                oppgave.leggTilTestresultat(modell, rett_alternativ_gemini10(image_path))
+        return 0
+    
+    def test_gemini15(self):
+        modell = "gemini-1.5-pro-preview-0409"
+        val = 0
+        for oppgave in self.oppgaver.values():
+            val += 1
+            if val %4 == 0:
+                time.sleep(60)
+            if modell not in oppgave.testresultat:
+                image_path = self.folder+oppgave.getFilename()
+                oppgave.leggTilTestresultat(modell, rett_alternativ_gemini15(image_path))
         return 0
 
     def print_comprehensive_report(self):
