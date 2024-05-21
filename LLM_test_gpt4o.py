@@ -29,7 +29,7 @@ def rett_alternativ(image_path):
     }
 
     payload = {
-    "model": "gpt-4-turbo",
+    "model": "gpt-4o",
     "messages": [
         {
         "role": "user",
@@ -51,7 +51,7 @@ def rett_alternativ(image_path):
     }
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    print(image_path[-15:], response.json()["choices"][0]["message"]["content"])
+    #print(image_path[-15:], response.json()["choices"][0]["message"]["content"])
     text = response.json()["choices"][0]["message"]["content"]
     if text in ["A", "B", "C", "D"]:
         return text

@@ -15,14 +15,29 @@ def datasett_fra_filer():
 
 json_data = json.load(open(folder+"LK06_test.json", "r"))
 resultat = ResultatKjemiOL(**json_data)
+resultat.print_comprehensive_report()
+# riktige_svar_gpt4 = 0
+# antal_oppgaver = 0
 
-for i in range(13, 23):
-    s = str(2000+i)
-    resultat.test_gpt4_turbo(strengkrav=s)
-    if "LK06_test.json" in os.listdir(folder):
-        os.remove(folder + "LK06_test.json")
-    with open(folder + "LK06_test.json", "w") as f:
-        f.write(resultat.model_dump_json())
+# for key in resultat.oppgaver:
+#     oppgave = resultat.oppgaver[key]
+#     antal_oppgaver += 1
+#     if oppgave.fasit == oppgave.testresultat["gpt-4-turbo"]:
+#         riktige_svar_gpt4 += 1
+    # if oppgave.fasit == oppgave.testresultat["gemini-1.0-pro-vision-001"]:
+    #     riktige_svar_gemini10 += 1
+    # if oppgave.fasit == oppgave.testresultat["gemini-1.5-pro-preview-0409"]:
+    #     riktige_svar_gemini15 += 1
+#print(riktige_svar_gpt4, antal_oppgaver, riktige_svar_gpt4/antal_oppgaver)
+
+
+# for i in range(13, 23):
+#     s = str(2000+i)
+#     resultat.test_gpt4o(strengkrav=s)
+#     if "LK06_test.json" in os.listdir(folder):
+#         os.remove(folder + "LK06_test.json")
+#     with open(folder + "LK06_test.json", "w") as f:
+#         f.write(resultat.model_dump_json())
 
 # json_data = json.load(open("alle_tre_test.json", "r"))
 # resultat2 = ResultatKjemiOL(**json_data)
