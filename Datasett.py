@@ -5,10 +5,7 @@ from Oppgave import OppgaveKjemiOL, OppgaveEksamen
 import os
 import time
 from llmtests import rett_alternativ, available_models, model_wait_time
-from LLM_test_gpt4 import rett_alternativ as rett_alternativ_gpt4
-from LLM_test_gemini10 import rett_alternativ as rett_alternativ_gemini10
-from LLM_test_gemini15 import rett_alternativ as rett_alternativ_gemini15
-from LLM_test_gpt4o import rett_alternativ as rett_alternativ_gpt4o
+
 
 class ResultatKjemiOL(pydantic.BaseModel):
     folder: str
@@ -91,73 +88,6 @@ class ResultatKjemiOL(pydantic.BaseModel):
                 image_path = self.folder+oppgave.getFilename()
                 oppgave.leggTilTestresultat(model, rett_alternativ(model, image_path))
                 time.sleep(model_wait_time(model))
-        return 0
-    def test_gpt4_turbo(self, strengkrav:str=""):
-        modell = "gpt-4-turbo"
-        val = 0
-        for oppgave in self.oppgaver.values():
-            if modell not in oppgave.testresultat and strengkrav in oppgave.getFilename():
-                image_path = self.folder+oppgave.getFilename()
-                oppgave.leggTilTestresultat(modell, rett_alternativ_gpt4(image_path))
-                val += 1
-                if val %4 == 0: #Avoiding rate limiting
-                    time.sleep(60)
-        return 0
-    def test_gpt4o(self, strengkrav:str=""):
-        """
-        Test all the images in the dataset with the gpt-4o model.
-
-        Args:
-            strengkrav (str, optional): A string that the filename must contain. Defaults to "". Used to test only a subset of the dataset (i.e. strenkrav="2000" would only test tasks from the year 2000).
-        
-        Returns:
-            int: 0 if the test is successful.
-        """
-        modell = "gpt-4o"
-        val = 0
-        for oppgave in self.oppgaver.values():
-            if modell not in oppgave.testresultat and strengkrav in oppgave.getFilename():
-                image_path = self.folder+oppgave.getFilename()
-                oppgave.leggTilTestresultat(modell, rett_alternativ_gpt4o(image_path))
-                print(oppgave.getFilename(), oppgave.testresultat[modell], oppgave.fasit)
-                val += 1
-                if val %4 == 0: #Avoiding rate limiting
-                    time.sleep(60)
-        return 0
-    
-    def test_gemini10(self, strengkrav:str=""):
-        """
-        Test all the images in the dataset with the gemini 1.0 model.
-
-        Args:
-            strengkrav (str, optional): A string that the filename must contain. Defaults to "". Used to test only a subset of the dataset (i.e. strenkrav="2000" would only test tasks from the year 2000).
-        
-        Returns:
-            int: 0 if the test is successful.
-        """
-        modell = "gemini-1.0-pro-vision-001"
-        val = 0
-        for oppgave in self.oppgaver.values():
-            if modell not in oppgave.testresultat and strengkrav in oppgave.getFilename():
-                image_path = self.folder+oppgave.getFilename()
-                oppgave.leggTilTestresultat(modell, rett_alternativ_gemini10(image_path))
-                print(oppgave.getFilename(), oppgave.testresultat[modell], oppgave.fasit)
-                val += 1
-                if val %4 == 0:
-                    time.sleep(60)
-
-        return 0
-    
-    def test_gemini15pro(self):
-        modell = "gemini-1.5-pro-preview-0409"
-        val = 0
-        for oppgave in self.oppgaver.values():
-            val += 1
-            if val %4 == 0:
-                time.sleep(60)
-            if modell not in oppgave.testresultat:
-                image_path = self.folder+oppgave.getFilename()
-                oppgave.leggTilTestresultat(modell, rett_alternativ_gemini15(image_path))
         return 0
 
     def print_comprehensive_report(self):
