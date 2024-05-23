@@ -12,15 +12,24 @@ def available_models(prints:bool = False):
         print("Available models are:")
         for model in MODELS:
             print(model)
-    return MODELS
-def rett_alternativ(model:str, imagepath:str):
+    return list(MODELS)
+def model_wait_time(model:str)-> int:
+    if "gpt" in model and model in MODELS:
+        return 15
+    elif "gemini-1.5-pro" in model and model in MODELS:
+        return 15
+    elif "gemini" in model:
+        return 15
+    else:
+        raise ValueError("Model must be either a valid OpenAI or vertex-AI model. Provided model was: "+model)
+def rett_alternativ(model:str, imagepath:str)-> str:
     if "gpt" in model and model in MODELS:
         return _rett_alternativ_gpt(model, imagepath)
-    elif "gemini" in model:
+    elif "gemini" in model and model in MODELS:
         return _rett_alternativ_gemini(model, imagepath)
     else:
         raise ValueError("Model must be either a valid gpt or gemini model. Provided model was: "+model)
-def _rett_alternativ_gemini(model:str, image_path:str):
+def _rett_alternativ_gemini(model:str, image_path:str)-> str:
 
     with open(r"C:\Users\78weikri\OneDrive - Akademiet Norge AS\Programmering\kjemAI\crap.toml", "rb") as f:
         config = tomli.load(f)
@@ -49,13 +58,14 @@ def _rett_alternativ_gemini(model:str, image_path:str):
             prompt
         ]
     )
+    print(model, ntpath.basename(image_path), response.text)
     if response.text in ["A", "B", "C", "D"]:
         return(response.text)
     elif response.text.strip().capitalize() in ["A", "B", "C", "D"]:
         return(response.text.strip().capitalize())
     else:
         raise ValueError("Could not find a valid answer, provided answer was: "+response.text+" for image: "+ntpath.basename(image_path))
-def _rett_alternativ_gpt(model:str, image_path:str):
+def _rett_alternativ_gpt(model:str, image_path:str)-> str:
     with open(r"C:\Users\78weikri\OneDrive - Akademiet Norge AS\Programmering\kjemAI\crap.toml", "rb") as f:
         config = tomli.load(f)
         api_key = config["api_key"] # OpenAI API Key
@@ -98,6 +108,7 @@ def _rett_alternativ_gpt(model:str, image_path:str):
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
     text = response.json()["choices"][0]["message"]["content"]
+    print(model, ntpath.basename(image_path), text)
     if text in ["A", "B", "C", "D"]:
         return text
     elif text.strip().capitalize() in ["A", "B", "C", "D"]:

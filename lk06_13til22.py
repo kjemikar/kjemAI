@@ -16,6 +16,23 @@ def datasett_fra_filer():
 json_data = json.load(open(folder+"LK06_test.json", "r"))
 resultat = ResultatKjemiOL(**json_data)
 resultat.print_comprehensive_report()
+
+for model in list(resultat.implemented_models()):
+    for i in range(13, 23):
+        s = str(2000+i)
+        resultat.get_llm_alternative(model=model,strengkrav=s)
+        if "LK06_test.json" in os.listdir(folder):
+            os.remove(folder + "LK06_test.json")
+        with open(folder + "LK06_test.json", "w") as f:
+            f.write(resultat.model_dump_json())
+
+# for model in resultat.implemented_models():
+#     resultat.test_model(model)
+#     if f"{model}.json" in os.listdir(folder):
+#         os.remove(folder + f"{model}.json")
+#     with
+
+# resultat.print_comprehensive_report()
 # riktige_svar_gpt4 = 0
 # antal_oppgaver = 0
 
@@ -31,13 +48,7 @@ resultat.print_comprehensive_report()
 #print(riktige_svar_gpt4, antal_oppgaver, riktige_svar_gpt4/antal_oppgaver)
 
 
-# for i in range(13, 23):
-#     s = str(2000+i)
-#     resultat.test_gpt4o(strengkrav=s)
-#     if "LK06_test.json" in os.listdir(folder):
-#         os.remove(folder + "LK06_test.json")
-#     with open(folder + "LK06_test.json", "w") as f:
-#         f.write(resultat.model_dump_json())
+
 
 # json_data = json.load(open("alle_tre_test.json", "r"))
 # resultat2 = ResultatKjemiOL(**json_data)

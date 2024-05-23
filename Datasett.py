@@ -4,7 +4,7 @@ from typing import Dict
 from Oppgave import OppgaveKjemiOL, OppgaveEksamen
 import os
 import time
-from llmtests import rett_alternativ, available_models
+from llmtests import rett_alternativ, available_models, model_wait_time
 from LLM_test_gpt4 import rett_alternativ as rett_alternativ_gpt4
 from LLM_test_gemini10 import rett_alternativ as rett_alternativ_gemini10
 from LLM_test_gemini15 import rett_alternativ as rett_alternativ_gemini15
@@ -14,8 +14,8 @@ class ResultatKjemiOL(pydantic.BaseModel):
     folder: str
     oppgaver: Dict[str, OppgaveKjemiOL] = dict()
 
-    def implemented_models(prints:bool=False):
-        return available_models(prints)
+    def implemented_models(prints:bool=False)->list:
+        return list(available_models(prints=prints))
     def tested_models(self)->list:
         models = list(self.implemented_models())
         for oppgave in self.oppgaver.values():
@@ -72,7 +72,7 @@ class ResultatKjemiOL(pydantic.BaseModel):
     def __len__(self):
         return len(self.oppgaver)
         
-    def get_llm_alternative(self, model:str, strengkrav:str="")->str:
+    def get_llm_alternative(self, model:str, strengkrav:str="")->int:
         """Get the alternative that the model predicts for the image that contains the string in strengkrav.
 
         Args:
@@ -82,10 +82,16 @@ class ResultatKjemiOL(pydantic.BaseModel):
         Returns:
             str: The alternative that the model predicts.
         """
+        # Verify that the model is implemented
+        if model not in self.implemented_models():
+            raise ValueError(f"Model {model} is not implemented")
+        
         for oppgave in self.oppgaver.values():
-            if model in oppgave.testresultat and strengkrav in oppgave.getFilename():
-                return oppgave.testresultat[model]
-        return None
+            if model not in oppgave.testresultat and strengkrav in oppgave.getFilename():
+                image_path = self.folder+oppgave.getFilename()
+                oppgave.leggTilTestresultat(model, rett_alternativ(model, image_path))
+                time.sleep(model_wait_time(model))
+        return 0
     def test_gpt4_turbo(self, strengkrav:str=""):
         modell = "gpt-4-turbo"
         val = 0
