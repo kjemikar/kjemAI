@@ -6,10 +6,10 @@ class OppgaveKjemiOL(pydantic.BaseModel):
     runde: str
     nummer: int
     fasit: str
-    testresultat: Dict[str, str] = dict()
+    testresultat_fleirval_enkel: Dict[str, str] = dict()
 
     def leggTilTestresultat(self, modell:str, resultat:str):
-        self.testresultat[modell] = resultat
+        self.testresultat_fleirval_enkel[modell] = resultat
 
     # init from filename + fasit
     @classmethod

@@ -17,16 +17,16 @@ json_data = json.load(open(folder+"LK06_test.json", "r"))
 resultat = ResultatKjemiOL(**json_data)
 resultat.print_comprehensive_report()
 
-for model in list(resultat.implemented_models()):
-    for i in range(13, 23):
-        s = str(2000+i)
-        resultat.get_llm_alternative(model=model,strengkrav=s)
-        if "LK06_test.json" in os.listdir(folder):
-            os.remove(folder + "LK06_test.json")
-        with open(folder + "LK06_test.json", "w") as f:
-            f.write(resultat.model_dump_json())
+# for model in list(resultat.implemented_models()):
+#     for i in range(13, 23):
+#         s = str(2000+i)
+#         resultat.get_llm_alternative(model=model,strengkrav=s)
+#         if "LK06_test.json" in os.listdir(folder):
+#             os.remove(folder + "LK06_test.json")
+#         with open(folder + "LK06_test.json", "w") as f:
+#             f.write(resultat.model_dump_json())
 
-# for model in resultat.implemented_models():
+# for| model in resultat.implemented_models():
 #     resultat.test_model(model)
 #     if f"{model}.json" in os.listdir(folder):
 #         os.remove(folder + f"{model}.json")

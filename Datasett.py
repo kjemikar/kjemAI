@@ -4,7 +4,7 @@ from typing import Dict
 from Oppgave import OppgaveKjemiOL, OppgaveEksamen
 import os
 import time
-from llmtests import rett_alternativ, available_models, model_wait_time
+from llmtests.multiplechoice import rett_alternativ, available_models, model_wait_time
 
 
 class ResultatKjemiOL(pydantic.BaseModel):
@@ -17,7 +17,7 @@ class ResultatKjemiOL(pydantic.BaseModel):
         models = list(self.implemented_models())
         for oppgave in self.oppgaver.values():
             for model in models:
-                if model not in oppgave.testresultat:
+                if model not in oppgave.testresultat_fleirval_enkel:
                     models.remove(model)
         return models
                     
@@ -84,7 +84,7 @@ class ResultatKjemiOL(pydantic.BaseModel):
             raise ValueError(f"Model {model} is not implemented")
         
         for oppgave in self.oppgaver.values():
-            if model not in oppgave.testresultat and strengkrav in oppgave.getFilename():
+            if model not in oppgave.testresultat_fleirval_enkel and strengkrav in oppgave.getFilename():
                 image_path = self.folder+oppgave.getFilename()
                 oppgave.leggTilTestresultat(model, rett_alternativ(model, image_path))
                 time.sleep(model_wait_time(model))
@@ -101,7 +101,7 @@ class ResultatKjemiOL(pydantic.BaseModel):
             antal_oppgaver = 0
             for oppgave in self.oppgaver.values():
                 antal_oppgaver += 1
-                if oppgave.fasit == oppgave.testresultat[model]:
+                if oppgave.fasit == oppgave.testresultat_fleirval_enkel[model]:
                     riktige_svar += 1
             print(f"Antall riktige svar: {riktige_svar}")
             print(f"Antall oppgaver: {antal_oppgaver}")

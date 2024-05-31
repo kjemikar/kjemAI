@@ -15,11 +15,11 @@ def available_models(prints:bool = False):
     return list(MODELS)
 def model_wait_time(model:str)-> int:
     if "gpt" in model and model in MODELS:
-        return 15
+        return 3
     elif "gemini-1.5-pro" in model and model in MODELS:
-        return 15
+        return 3
     elif "gemini" in model:
-        return 15
+        return 3
     else:
         raise ValueError("Model must be either a valid OpenAI or vertex-AI model. Provided model was: "+model)
 def rett_alternativ(model:str, imagepath:str)-> str:
@@ -115,6 +115,18 @@ def _rett_alternativ_gpt(model:str, image_path:str)-> str:
         return text.strip().capitalize()
     else:
         raise ValueError("Could not find a valid answer, provided answer was: "+text+" for image: "+ntpath.basename(image_path))
+def rett_alternativ_med_forklaring(model:str, imagepath:str)-> str:
+    if "gpt" in model and model in MODELS:
+        return _rett_alternativ_med_forklaring_gemini(model, imagepath)
+    elif "gemini" in model and model in MODELS:
+        return _rett_alternativ_med_forklaring_gpt(model, imagepath)
+    else:
+        raise ValueError("Model must be either a valid gpt or gemini model. Provided model was: "+model)
+def _rett_alternativ_med_forklaring_gemini()-> str:
+    raise NotImplementedError()
+def _rett_alternativ_med_forklaring_gpt()-> str:
+    raise NotImplementedError()
+    
 if __name__ == "__main__":
     print("Available test functions are: rett_alternativ(model:str, imagepath:str)")
     print("Usage: rett_alternativ(model:str, imagepath:str)")
