@@ -7,9 +7,13 @@ class OppgaveKjemiOL(pydantic.BaseModel):
     nummer: int
     fasit: str
     testresultat_fleirval_enkel: Dict[str, str] = dict()
+    testresultat_fleirval_forklaring: Dict[str, Dict[str, str]] = dict()
 
     def leggTilTestresultat(self, modell:str, resultat:str):
         self.testresultat_fleirval_enkel[modell] = resultat
+
+    def leggTilTestresultatForklaring(self, modell:str, resultat:Dict[str, str]):
+        self.testresultat_fleirval_forklaring[modell] = resultat
 
     # init from filename + fasit
     @classmethod

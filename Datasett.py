@@ -4,7 +4,7 @@ from typing import Dict
 from Oppgave import OppgaveKjemiOL, OppgaveEksamen
 import os
 import time
-from llmtests.multiplechoice import rett_alternativ, available_models, model_wait_time
+from llmtests.multiplechoice import rett_alternativ, available_models, model_wait_time, rett_alternativ_med_forklaring
 
 
 class ResultatKjemiOL(pydantic.BaseModel):
@@ -13,7 +13,14 @@ class ResultatKjemiOL(pydantic.BaseModel):
 
     def implemented_models(prints:bool=False)->list:
         return list(available_models(prints=prints))
-    def tested_models(self)->list:
+    def tested_models_fleirval_forklaring(self)->list:
+        models = list(self.implemented_models())
+        for oppgave in self.oppgaver.values():
+            for model in models:
+                if model not in oppgave.testresultat_fleirval_forklaring:
+                    models.remove(model)
+        return models
+    def tested_models_fleirval_enkel(self)->list:
         models = list(self.implemented_models())
         for oppgave in self.oppgaver.values():
             for model in models:
@@ -69,7 +76,7 @@ class ResultatKjemiOL(pydantic.BaseModel):
     def __len__(self):
         return len(self.oppgaver)
         
-    def get_llm_alternative(self, model:str, strengkrav:str="")->int:
+    def get_llm_alternative_simple(self, model:str, strengkrav:str="")->int:
         """Get the alternative that the model predicts for the image that contains the string in strengkrav.
 
         Args:
@@ -90,10 +97,31 @@ class ResultatKjemiOL(pydantic.BaseModel):
                 time.sleep(model_wait_time(model))
         return 0
 
+    def get_llm_alternative_forklaring(self, model:str, strengkrav:str="")->int:
+        """Get the alternatives that the model predicts for the images that contains the string in strengkrav and the explanation and add both to the dict of the tasks called testresultat_fleirval_forklaring.
+
+        Args:
+            model (str): The model to use.
+            strengkrav (str, optional): The string that the filename must contain. Defaults to "".
+
+        Returns:
+            int: 0 if the function runs successfully.
+
+        """
+        # Verify that the model is implemented
+        if model not in self.implemented_models():
+            raise ValueError(f"Model {model} is not implemented")
+        
+        for oppgave in self.oppgaver.values():
+            if model not in oppgave.testresultat_fleirval_forklaring and strengkrav in oppgave.getFilename():
+                image_path = self.folder+oppgave.getFilename()
+                oppgave.leggTilTestresultatForklaring(model, rett_alternativ_med_forklaring(model, image_path))
+                time.sleep(model_wait_time(model))
+        return 0
     def print_comprehensive_report(self):
         # print models tested with score per model
-        models = self.tested_models()
-        print("Models tested:")
+        models = self.tested_models_fleirval_enkel()
+        print("Models tested without explanation:")
         print(models)
         for model in models:
             print(f"Model: {model}")
@@ -102,6 +130,21 @@ class ResultatKjemiOL(pydantic.BaseModel):
             for oppgave in self.oppgaver.values():
                 antal_oppgaver += 1
                 if oppgave.fasit == oppgave.testresultat_fleirval_enkel[model]:
+                    riktige_svar += 1
+            print(f"Antall riktige svar: {riktige_svar}")
+            print(f"Antall oppgaver: {antal_oppgaver}")
+            print(f"Score: {riktige_svar/antal_oppgaver}")
+        # print models tested with explanation
+        models = self.tested_models_fleirval_forklaring()
+        print("Models tested with explanation:")
+        print(models)
+        for model in models:
+            print(f"Model: {model}")
+            riktige_svar = 0
+            antal_oppgaver = 0
+            for oppgave in self.oppgaver.values():
+                antal_oppgaver += 1
+                if oppgave.fasit == oppgave.testresultat_fleirval_forklaring[model]["answer"]:
                     riktige_svar += 1
             print(f"Antall riktige svar: {riktige_svar}")
             print(f"Antall oppgaver: {antal_oppgaver}")
