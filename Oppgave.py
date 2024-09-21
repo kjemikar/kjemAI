@@ -1,5 +1,5 @@
 import pydantic
-from typing import Dict
+from typing import Dict, Set
 
 class OppgaveKjemiOL(pydantic.BaseModel):
     aar: int
@@ -8,12 +8,22 @@ class OppgaveKjemiOL(pydantic.BaseModel):
     fasit: str
     testresultat_fleirval_enkel: Dict[str, str] = dict()
     testresultat_fleirval_forklaring: Dict[str, Dict[str, str]] = dict()
+    keyword: Set[str] = set()
+    transkripsjon: str = ""
 
     def leggTilTestresultat(self, modell:str, resultat:str):
         self.testresultat_fleirval_enkel[modell] = resultat
 
     def leggTilTestresultatForklaring(self, modell:str, resultat:Dict[str, str]):
         self.testresultat_fleirval_forklaring[modell] = resultat
+
+    def leggTilKeyword(self, keyword:str):
+        """Add a keyword to the task. Keywords are used to search for tasks in the dataset.'
+        keywords should be one word and not contain spaces.
+        """
+        if " " in keyword:
+            raise ValueError("Keywords should not contain spaces")
+        self.keyword.add(keyword)
 
     # init from filename + fasit
     @classmethod

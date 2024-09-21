@@ -82,7 +82,6 @@ def rett_alternativ_med_forklaring(model:str, image_path:str)-> dict:
     print(model, ntpath.basename(image_path), text['answer'])
     return text
 
-
 if __name__ == "__main__":
     print("Available test functions are: rett_alternativ(model:str, imagepath:str)")
     print("Usage: rett_alternativ(model:str, imagepath:str)")

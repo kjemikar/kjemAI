@@ -26,14 +26,15 @@ resultat = ResultatKjemiOL(**json_data)
 #             os.remove(folder + "LK06_13til22.json")
 #         with open(folder + "LK06_13til22.json", "w", encoding="utf-8") as f:
 #             f.write(resultat.model_dump_json())
-for model in resultat.implemented_models():
-    for i in range(13, 23):
-        s = str(2000+i)
-        resultat.get_llm_alternative_forklaring(model, s)
-        if "LK06_13til22.json" in os.listdir(folder):
-            os.remove(folder + "LK06_13til22.json")
-        with open(folder + "LK06_13til22.json", "w", encoding="utf-8") as f:
-            f.write(resultat.model_dump_json())
+
+# for model in resultat.implemented_models():
+#     for i in range(13, 23):
+#         s = str(2000+i)
+#         resultat.get_llm_alternative_forklaring(model, s)
+#         if "LK06_13til22.json" in os.listdir(folder):
+#             os.remove(folder + "LK06_13til22.json")
+#         with open(folder + "LK06_13til22.json", "w", encoding="utf-8") as f:
+#             f.write(resultat.model_dump_json())
 
 # for model in resultat.implemented_models():
 #     resultat.test_model(model)
